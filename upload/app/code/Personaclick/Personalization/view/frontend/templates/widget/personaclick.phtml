@@ -1,0 +1,19 @@
+<?php
+/**
+ * Copyright © 2017 PersonaClick. All rights reserved.
+ */
+?>
+<?php $data = $block->getData('settings'); ?>
+<!-- BEGIN PersonaClick BLOCK <?php echo $data['module_id']; ?> -->
+<script type="text/javascript">
+<?php echo $data['css']; ?>
+r46('recommend', '<?php echo $data['type']; ?>', <?php echo $data['params']; ?>, function(results) {
+    if (results.length > 0) {
+        require(['jquery'], function($) {
+            $('#personaclick-recommended-<?php echo $data['module_id']; ?>').load('<?php echo $block->getBaseUrl(); ?>personaclick/ajax/products?<?php echo http_build_query($data); ?>&product_ids=' + results);
+        });
+    }
+});
+</script>
+<div id="personaclick-recommended-<?php echo $data['module_id']; ?>"></div>
+<!-- END PersonaClick BLOCK <?php echo $data['module_id']; ?> -->

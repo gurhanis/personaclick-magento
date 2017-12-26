@@ -1,0 +1,391 @@
+<?php
+/**
+ * Copyright © 2017 PersonaClick. All rights reserved.
+ */
+?>
+<div id="personaclick_help_block">
+    <script type="text/javascript">
+    var personaclickAjaxUrl = '<?php echo $this->getUrl('personaclick/ajax/ajax') ?>';
+
+    require(['jquery'], function($) {
+        $(function() {
+            $('#container').prepend('<div class="messages" id="personaclick_messages"></div>');
+
+            $('#personaclick_login_button').click(function () {
+                $('#personaclick_auth_block + .section-config').fadeIn();
+                $('#personaclick_auth_block + div + .section-config').css('display', 'none');
+            });
+
+            $('#personaclick_register_button').click(function () {
+                $('#personaclick_auth_block + .section-config').css('display', 'none');
+                $('#personaclick_auth_block + div + .section-config').fadeIn();
+            });
+
+            $('#submitUserRegister').click(function () {
+                personaclickUserRegister();
+            });
+
+            $('#submitShopLogin').click(function () {
+                personaclickShopXML(true);
+            });
+
+            $('#submitShopXML').click(function () {
+                personaclickShopXML();
+            });
+
+            $('#submitShopOrders').click(function () {
+                personaclickShopOrders();
+            });
+
+            $('#submitShopCustomers').click(function () {
+                personaclickShopCustomers();
+            });
+
+            $('#submitShopFile1').click(function () {
+                personaclickShopFiles();
+            });
+
+            $('#submitShopFile2').click(function () {
+                personaclickShopFiles();
+            });
+
+            $('#submitDashboard').click(function () {
+                personaclickDashboard();
+            });
+
+            personaclickLeadTracking();
+        });
+
+        function personaclickLeadTracking()
+        {
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickLeadTracking',
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: false
+            });
+        }
+
+        function personaclickUserRegister()
+        {
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickUserRegister',
+                    email: $('#personaclick_register_email').val(),
+                    phone: $('#personaclick_register_phone').val(),
+                    first_name: $('#personaclick_register_first_name').val(),
+                    last_name: $('#personaclick_register_last_name').val(),
+                    country_code: $('#personaclick_register_country_code').val(),
+                    currency_code: $('#personaclick_register_currency_code').val(),
+                    category: $('#personaclick_register_category').val()
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#personaclick_messages').empty();
+                $('html, body').animate({scrollTop: 0}, 'slow');
+
+                if (json.success) {
+                    $('#personaclick_messages').append('<div class="message message-success success"><div data-ui-id="messages-message-success">' + json.success + '</div></div>');
+
+                    personaclickShopRegister();
+                }
+
+                if (json.message) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.message + '</div></div>');
+                } else if (json.error) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.error + '</div></div>');
+                }
+            });
+        }
+
+        function personaclickShopRegister()
+        {
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickShopRegister',
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#personaclick_messages').empty();
+                $('html, body').animate({scrollTop: 0}, 'slow');
+
+                if (json.success) {
+                    $('#personaclick_messages').append('<div class="message message-success success"><div data-ui-id="messages-message-success">' + json.success + '</div></div>');
+
+                    personaclickShopXML(true);
+                }
+
+                if (json.message) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.message + '</div></div>');
+                } else if (json.error) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.error + '</div></div>');
+                }
+            });
+        }
+
+        function personaclickShopXML(auth)
+        {
+            if (!auth) {
+                auth = false;
+            }
+
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickShopXML',
+                    store_key: $('#personaclick_login_store_key').val(),
+                    secret_key: $('#personaclick_login_secret_key').val()
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#personaclick_messages').empty();
+                $('html, body').animate({scrollTop: 0}, 'slow');
+
+                if (json.success) {
+                    $('#submitShopXML').remove();
+
+                    $('#personaclick_messages').append('<div class="message message-success success"><div data-ui-id="messages-message-success">' + json.success + '</div></div>');
+
+                    if (auth) {
+                        personaclickShopOrders(1, true);
+                    }
+                }
+
+                if (json.message) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.message + '</div></div>');
+                } else if (json.error) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.error + '</div></div>');
+                }
+            });
+        }
+
+        function personaclickShopOrders(next, auth)
+        {
+            if (!next) {
+                next = 1;
+            }
+
+            if (!auth) {
+                auth = false;
+            }
+
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickShopOrders',
+                    next: next,
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#personaclick_messages').empty();
+                $('html, body').animate({scrollTop: 0}, 'slow');
+
+                if (json.success) {
+                    $('#personaclick_messages').append('<div class="message message-success success"><div data-ui-id="messages-message-success">' + json.success + '</div></div>');
+                }
+
+                if (json.next) {
+                    personaclickShopOrders(json.next);
+                } else {
+                    if (!auth && json.success) {
+                        $('#submitShopOrders').remove();
+                    }
+
+                    if (auth) {
+                        personaclickShopCustomers(1, true);
+                    }
+                }
+
+                if (json.message) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.message + '</div></div>');
+                } else if (json.error) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.error + '</div></div>');
+                }
+            });
+        }
+
+        function personaclickShopCustomers(next, auth)
+        {
+            if (!next) {
+                next = 1;
+            }
+
+            if (!auth) {
+                auth = false;
+            }
+
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickShopCustomers',
+                    next: next,
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#personaclick_messages').empty();
+                $('html, body').animate({scrollTop: 0}, 'slow');
+
+                if (json.success) {
+                    $('#personaclick_messages').append('<div class="message message-success success"><div data-ui-id="messages-message-success">' + json.success + '</div></div>');
+                }
+
+                if (json.next) {
+                    personaclickShopCustomers(json.next);
+                } else {
+                    if (!auth && json.success) {
+                        $('#submitShopCustomers').remove();
+                    }
+
+                    if (auth) {
+                        personaclickShopFiles(true);
+                    }
+                }
+
+                if (json.message) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.message + '</div></div>');
+                } else if (json.error) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.error + '</div></div>');
+                }
+            });
+        }
+
+        function personaclickShopFiles(auth)
+        {
+            if (!auth) {
+                auth = false;
+            }
+
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickShopFiles',
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#personaclick_messages').empty();
+                $('html, body').animate({scrollTop: 0}, 'slow');
+
+                if (json.success) {
+                    $('#submitShopFile1').remove();
+                    $('#submitShopFile2').remove();
+
+                    $.map(json.success, function (success) {
+                        $('#personaclick_messages').append('<div class="message message-success success"><div data-ui-id="messages-message-success">' + success + '</div></div>');
+                    });
+                }
+
+                if (json.message) {
+                    $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + json.message + '</div></div>');
+                } else if (json.error) {
+                    $.map(json.error, function (error) {
+                        $('#personaclick_messages').append('<div class="message message-error error"><div data-ui-id="messages-message-error">' + error + '</div></div>');
+                    });
+                }
+
+                if (auth) {
+                    if ($('#personaclick_login_store_key').val() == '' && $('#personaclick_login_secret_key').val() == '') {
+                        personaclickShopFinish();
+                    } else {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    }
+                }
+            });
+        }
+
+        function personaclickShopFinish()
+        {
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickShopFinish',
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                if (json) {
+                    $('body').append(json);
+
+                    setTimeout(function () {
+                        $('#submitShopFinish').submit();
+                    }, 1000);
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                }
+            });
+        }
+
+        function personaclickDashboard()
+        {
+            $.ajax({
+                url: personaclickAjaxUrl,
+                data: {
+                    form_key: window.FORM_KEY,
+                    action: 'personaclickDashboard',
+                },
+                type: 'post',
+                dataType: 'json',
+                showLoader: true
+            }).done(function (json) {
+                $('#formDashboard').remove();
+
+                if (json['form']) {
+                    $('body').append(json['form']);
+
+                    setTimeout(function () {
+                        $('#formDashboard').submit();
+                    }, 500);
+                }
+
+                if (json['url']) {
+                    window.open(json['url'], '_blank');
+                }
+            });
+        }
+    });
+    </script>
+    <div class="message message-info info">
+        <p><?php echo __('Go to your PersonaClick store dashboard to get the access to:'); ?></p>
+        <ul style="padding-left: 40px;">
+            <li><?php echo __('Triggered emails'); ?></li>
+            <li><?php echo __('Email marketing tool'); ?></li>
+            <li><?php echo __('Personalized search'); ?></li>
+            <li><?php echo __('Web push triggered notifications'); ?></li>
+            <li><?php echo __('Instant web push notifications'); ?></li>
+            <li><?php echo __('Audience segmentation'); ?></li>
+            <li><?php echo __('Abandoned cart remarketing tool'); ?></li>
+        </ul>
+        <button id="submitDashboard" class="primary" onclick="return false;"><?php echo __('PersonaClick dashboard'); ?></button><br><br>
+        <p><?php echo __('Documentation:'); ?> <a href="<?php echo __('https://docs.personaclick.com/display/en/Magento+2.x+Extension'); ?>" target="_blank"><?php echo __('https://docs.personaclick.com/display/en/Magento+2.x+Extension'); ?></a></p>
+        <p><?php echo __('Support:'); ?> <a href="mailto:support@personaclick.com?subject=Support for PersonaClick Magento 2 extension" target="_blank">support@personaclick.com</a></p>
+    </div>
+</div>

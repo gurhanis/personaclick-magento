@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2017 PersonaClick. All rights reserved.
+ */
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="personaclick_recommendation" class="Personaclick\Personalization\Block\Frontend\Widget\Recommendation" placeholder_image="Personaclick_Personalization::images/personaclick_widget.png">
+        <label translate="true">PersonaClick Recommendations</label>
+        <description translate="true">PersonaClick Product Recommendations Block</description>
+        <parameters>
+            <parameter name="block_type" xsi:type="select" required="true" visible="true" source_model="Personaclick\Personalization\Model\Config\Source\Api\Type">
+                <label translate="true">Block Type</label>
+            </parameter>
+            <parameter name="title" xsi:type="text" required="false" visible="true">
+                <label translate="true">Block Title</label>
+            </parameter>
+            <parameter name="limit" xsi:type="text" required="true" visible="true">
+                <label translate="true">Product Limit</label>
+                <value>5</value>
+            </parameter>
+            <parameter name="block_template" xsi:type="select" required="true" visible="true">
+                <label translate="true">Recommendation Block Template</label>
+                <options>
+                    <option name="basic" value="widget/basic.phtml" selected="true">
+                        <label translate="true">PersonaClick Basic Template</label>
+                    </option>
+                    <option name="grid" value="widget/grid.phtml">
+                        <label translate="true">Products Grid Template</label>
+                    </option>
+                    <option name="list" value="widget/list.phtml">
+                        <label translate="true">Products List Template</label>
+                    </option>
+                    <option name="list_full" value="widget/list_full.phtml">
+                        <label translate="true">Products Images and Names List Template</label>
+                    </option>
+                    <option name="list_images" value="widget/list_images.phtml">
+                        <label translate="true">Products Images Only List Template</label>
+                    </option>
+                    <option name="list_names" value="widget/list_names.phtml">
+                        <label translate="true">Products Names Only List Template</label>
+                    </option>
+                </options>
+            </parameter>
+            <parameter name="discount" xsi:type="select" required="false" visible="true" source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Show Only Special Offers</label>
+                <value>0</value>
+            </parameter>
+            <parameter name="brands" xsi:type="multiselect" required="false" visible="true" source_model="Personaclick\Personalization\Model\Config\Source\Product\Manufacturer">
+                <label translate="true">Show Only Products of Following Brands</label>
+            </parameter>
+            <parameter name="exclude_brands" xsi:type="multiselect" required="false" visible="true" source_model="Personaclick\Personalization\Model\Config\Source\Product\Manufacturer">
+                <label translate="true">Exclude Products of Following Brands</label>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>
